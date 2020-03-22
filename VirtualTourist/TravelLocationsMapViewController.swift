@@ -11,7 +11,7 @@ import MapKit
 import CoreData
 
 class TravelLocationsMapViewController: UIViewController, MKMapViewDelegate {
-
+    
     @IBOutlet weak var mapView: MKMapView!
     
     var dataController: DataController!
@@ -19,63 +19,67 @@ class TravelLocationsMapViewController: UIViewController, MKMapViewDelegate {
         super.viewDidLoad()
         
         
-            //TODO: Test
         
-               // Generate long-press UIGestureRecognizer.
-               let myLongPress: UILongPressGestureRecognizer = UILongPressGestureRecognizer()
-               myLongPress.addTarget(self, action: #selector(recognizeLongPress(_:)))
-               
-               // Added UIGestureRecognizer to MapView.
-               mapView.addGestureRecognizer(myLongPress)
+        
+        // Generate long-press UIGestureRecognizer.
+        let myLongPress: UILongPressGestureRecognizer = UILongPressGestureRecognizer()
+        myLongPress.addTarget(self, action: #selector(recognizeLongPress(_:)))
+        
+        // Added UIGestureRecognizer to MapView.
+        mapView.addGestureRecognizer(myLongPress)
     }
     
     // A method called when long press is detected.
-       @objc private func recognizeLongPress(_ sender: UILongPressGestureRecognizer) {
-           // Do not generate pins many times during long press.
+    @objc private func recognizeLongPress(_ sender: UILongPressGestureRecognizer) {
+        // Do not generate pins many times during long press.
         if sender.state != UIGestureRecognizer.State.began {
-               return
-           }
-           
-           // Get the coordinates of the point you pressed long.
-           let location = sender.location(in: mapView)
-           
-           // Convert location to CLLocationCoordinate2D.
-           let myCoordinate: CLLocationCoordinate2D = mapView.convert(location, toCoordinateFrom: mapView)
+            return
+        }
+        
+        // Get the coordinates of the point you pressed long.
+        let location = sender.location(in: mapView)
+        
+        // Convert location to CLLocationCoordinate2D.
+        let myCoordinate: CLLocationCoordinate2D = mapView.convert(location, toCoordinateFrom: mapView)
         
         
-            let pin = Pin(context: dataController.viewContext)
-            pin.latitude = myCoordinate.latitude
-            pin.longitude = myCoordinate.longitude
-           
-           // Generate pins.
-           let annotation: MKPointAnnotation = MKPointAnnotation()
-           
-           // Set the coordinates.
-           annotation.coordinate = myCoordinate
-           mapView.addAnnotation(annotation)
+       
+        //TODO: Refactor this code into its own method later
         
-//        FlickrClient.getPhotos(lat: pin.latitude, long: pin.longitude) { (photosParser, error) in
-//
-//            if let photosParser = photosParser {
-//
-//                if photosParser.photos.pages > 0 {
-//
-//                    // Added pins to MapView.
-//                    DispatchQueue.main.async {
-//                        self.mapView.addAnnotation(annotation)
-//                    }
-//                } else {
-//                    print("There are no photos set for this location")
-//                }
-//            }
-//
-//        }
+        FlickrClient.getPhotos(lat: myCoordinate.latitude, long: myCoordinate.longitude) { (photosParser, error) in
+            
+            if let photosParser = photosParser {
+                
+                if photosParser.photos.pages > 0 {
+                    
+                    // Added pins to MapView.
+                    DispatchQueue.main.async {
+                        // Generate pins.
+                       // let annotation: MKPointAnnotation = MKPointAnnotation()
+                        
+                        // Set the coordinates.
+//                        annotation.coordinate = myCoordinate
+//                        annotation.title = "Open Photo Album"
+                        let pin = Pin(context: self.dataController.viewContext)
+                        pin.latitude = myCoordinate.latitude
+                        pin.longitude = myCoordinate.longitude
+                        pin.title = "Open Photo Album"
+                        pin.photoCount = photosParser.photos.total
+                        self.mapView.addAnnotation(pin)
+                       
+                    }
+                } else {
+                    print("Alert:There are no photos set for this location")
+                }
+            }
+            
+        }
         
-       }
-
+    }
+    
     
     func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
-        
+        let pin = annotation as! Pin
         let reuseId = "pin"
         var pinView = mapView.dequeueReusableAnnotationView(withIdentifier: reuseId) as? MKPinAnnotationView
         
@@ -85,6 +89,14 @@ class TravelLocationsMapViewController: UIViewController, MKMapViewDelegate {
             pinView?.animatesDrop = true
             pinView!.pinTintColor = .red
             pinView!.rightCalloutAccessoryView = UIButton(type: .detailDisclosure)
+            
+            let photoCountbutton = UIButton(type: .roundedRect)
+            photoCountbutton.frame = CGRect(x: 0, y: 0, width: 50, height: 50)
+            photoCountbutton.setTitle(pin.photoCount, for: .normal)
+            photoCountbutton.setTitleColor(.white, for: .normal)
+            photoCountbutton.backgroundColor = UIColor.blue
+            
+            pinView?.rightCalloutAccessoryView = photoCountbutton
         }
         else {
             pinView!.annotation = annotation
@@ -107,6 +119,6 @@ class TravelLocationsMapViewController: UIViewController, MKMapViewDelegate {
             
         }
     }
-
+    
 }
 

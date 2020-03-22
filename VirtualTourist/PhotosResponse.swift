@@ -13,6 +13,7 @@ struct PhotosParser: Codable {
 struct Photos: Codable {
     let pages: Int
     let photo: [PhotoParser]
+    let total: String
 }
 struct PhotoParser: Codable {
     

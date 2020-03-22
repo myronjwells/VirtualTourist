@@ -7,10 +7,12 @@
     <entity name="Pin" representedClassName="Pin" syncable="YES" codeGenerationType="class">
         <attribute name="latitude" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
         <attribute name="longitude" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="photoCount" optional="YES" attributeType="String"/>
+        <attribute name="title" optional="YES" attributeType="String"/>
         <relationship name="photos" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="Photo" inverseName="pin" inverseEntity="Photo"/>
     </entity>
     <elements>
         <element name="Photo" positionX="-1423.171875" positionY="-503.125" width="128" height="73"/>
-        <element name="Pin" positionX="-1632.09765625" positionY="-520.31640625" width="128" height="88"/>
+        <element name="Pin" positionX="-1632.09765625" positionY="-520.31640625" width="128" height="118"/>
     </elements>
 </model>
