@@ -43,7 +43,7 @@ class TravelLocationsMapViewController: UIViewController, MKMapViewDelegate {
         let myCoordinate: CLLocationCoordinate2D = mapView.convert(location, toCoordinateFrom: mapView)
         
         
-       
+        
         //TODO: Refactor this code into its own method later
         
         FlickrClient.getPhotos(lat: myCoordinate.latitude, long: myCoordinate.longitude) { (photosParser, error) in
@@ -55,18 +55,40 @@ class TravelLocationsMapViewController: UIViewController, MKMapViewDelegate {
                     // Added pins to MapView.
                     DispatchQueue.main.async {
                         // Generate pins.
-                       // let annotation: MKPointAnnotation = MKPointAnnotation()
                         
-                        // Set the coordinates.
-//                        annotation.coordinate = myCoordinate
-//                        annotation.title = "Open Photo Album"
                         let pin = Pin(context: self.dataController.viewContext)
                         pin.latitude = myCoordinate.latitude
                         pin.longitude = myCoordinate.longitude
                         pin.title = "Open Photo Album"
                         pin.photoCount = photosParser.photos.total
                         self.mapView.addAnnotation(pin)
-                       
+                        
+                        // create Photo Object and add to Pin
+                        for flickrPhoto in photosParser.photos.photo {
+                            let photo = Photo(context: self.dataController.viewContext)
+                            
+                            if let flickrImageURL = flickrPhoto.mediumUrl {
+                                
+                                let imageURL = URL(string: flickrImageURL)
+                                
+                                self.downloadImage(from: imageURL!) { imageData  in
+                                    guard let imageData = imageData else { return }
+                                    photo.image = imageData
+                                }
+                                
+                                pin.addToPhotos(photo)
+                            }
+                            
+                        }
+                        
+                        
+                        //                        func addNote() {
+                        //                            let note = Note(context: dataController.viewContext)
+                        //                            note.creationDate = Date()
+                        //                            note.notebook = notebook
+                        //                            try? dataController.viewContext.save()
+                        //                        }
+                        
                     }
                 } else {
                     print("Alert:There are no photos set for this location")
@@ -75,6 +97,21 @@ class TravelLocationsMapViewController: UIViewController, MKMapViewDelegate {
             
         }
         
+    }
+    
+    func downloadImage(from url: URL,completion: @escaping (Data?) -> Void) {
+        print("Download Started")
+        FlickrClient.getData(from: url) { data, response, error in
+            guard let data = data, error == nil
+                else {
+                    completion(nil)
+                    return }
+            print(response?.suggestedFilename ?? url.lastPathComponent)
+            print("Download Finished")
+            
+            completion(data)
+          
+        }
     }
     
     
@@ -109,13 +146,11 @@ class TravelLocationsMapViewController: UIViewController, MKMapViewDelegate {
     // to the URL specified in the annotationViews subtitle property.
     func mapView(_ mapView: MKMapView, annotationView view: MKAnnotationView, calloutAccessoryControlTapped control: UIControl) {
         if control == view.rightCalloutAccessoryView {
-            let app = UIApplication.shared
-            if let toOpen = view.annotation?.subtitle! {
-                app.open(URL(string: toOpen)!, options: [:], completionHandler: {
-                    (success) in
-                    print("Open \(toOpen): \(success)")
-                })
-            }
+            
+            let photoAlbumViewController = self.storyboard?.instantiateViewController(withIdentifier: "photoAlbumViewController") as! PhotoAlbumViewController
+            photoAlbumViewController.pin = view.annotation as? Pin
+            photoAlbumViewController.dataController = dataController
+            self.navigationController?.pushViewController(photoAlbumViewController, animated: true)
             
         }
     }
