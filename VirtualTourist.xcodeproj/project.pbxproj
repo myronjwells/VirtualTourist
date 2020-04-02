@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		CF67733C2432DCC80082B318 /* PhotoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF67733B2432DCC80082B318 /* PhotoCell.swift */; };
+		CF7C1FB824366BF700F845FD /* UIImageView+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF7C1FB724366BF700F845FD /* UIImageView+Extension.swift */; };
 		CFA3080F2422F56100C1F955 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFA3080E2422F56100C1F955 /* AppDelegate.swift */; };
 		CFA308132422F56100C1F955 /* TravelLocationsMapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CFA308122422F56100C1F955 /* TravelLocationsMapViewController.swift */; };
 		CFA308162422F56100C1F955 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CFA308142422F56100C1F955 /* Main.storyboard */; };
@@ -24,6 +25,7 @@
 
 /* Begin PBXFileReference section */
 		CF67733B2432DCC80082B318 /* PhotoCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoCell.swift; sourceTree = "<group>"; };
+		CF7C1FB724366BF700F845FD /* UIImageView+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImageView+Extension.swift"; sourceTree = "<group>"; };
 		CFA3080B2422F56100C1F955 /* VirtualTourist.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = VirtualTourist.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		CFA3080E2422F56100C1F955 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		CFA308122422F56100C1F955 /* TravelLocationsMapViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TravelLocationsMapViewController.swift; sourceTree = "<group>"; };
@@ -84,6 +86,7 @@
 				CFC4D1E22426D2AC0060DDFE /* DataController.swift */,
 				CFC4D1E424273A1A0060DDFE /* Pin+Extension.swift */,
 				CF67733B2432DCC80082B318 /* PhotoCell.swift */,
+				CF7C1FB724366BF700F845FD /* UIImageView+Extension.swift */,
 			);
 			path = VirtualTourist;
 			sourceTree = "<group>";
@@ -166,6 +169,7 @@
 				CFA3080F2422F56100C1F955 /* AppDelegate.swift in Sources */,
 				CFC4D1E32426D2AC0060DDFE /* DataController.swift in Sources */,
 				CF67733C2432DCC80082B318 /* PhotoCell.swift in Sources */,
+				CF7C1FB824366BF700F845FD /* UIImageView+Extension.swift in Sources */,
 				CFA308262423040F00C1F955 /* PhotoAlbumViewController.swift in Sources */,
 				CFA308392425515400C1F955 /* ErrorResponse.swift in Sources */,
 				CFC4D1E524273A1A0060DDFE /* Pin+Extension.swift in Sources */,

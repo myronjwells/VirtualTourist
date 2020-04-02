@@ -98,7 +98,7 @@ class FlickrClient {
         return task
     }
     
-    class func getPhotos(lat: Double, long: Double, imageURLType: String = "url_m", page: Int = 1, perPage: Int = 50, completion: @escaping (PhotosParser?, Error?) -> Void) {
+    class func getPhotos(lat: Double, long: Double, imageURLType: String = "url_m", page: Int = 1, perPage: Int = 24, completion: @escaping (PhotosParser?, Error?) -> Void) {
         taskForGETRequest(urlComp: Endpoints.getPhotos.urlComp, params: [OptionalParams.latitude: lat, OptionalParams.longitutde: long, OptionalParams.extras: imageURLType, OptionalParams.page: page, OptionalParams.perPage: perPage], responseType: PhotosParser.self) { response, error in
             if let response = response {
                 completion(response,nil)

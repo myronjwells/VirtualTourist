@@ -19,7 +19,14 @@ class TravelLocationsMapViewController: UIViewController, MKMapViewDelegate {
         super.viewDidLoad()
         
         
-        
+        //TODO: Save All models with coredata
+        //TODO: persist the spot user zoomed to with NSUserdefaults
+        //TODO: See if there is any multi threading backend stuff needed for downloading pictures/making network calls in the longpress function
+        //TODO: figure out a way to delete pins
+        //TODO: Extra- consider making a tutorial view for the different viewcontrollers?
+        //TODO: Consider moving the photoCount, page, and pages out of Pin model into its own data model.
+              
+
         
         // Generate long-press UIGestureRecognizer.
         let myLongPress: UILongPressGestureRecognizer = UILongPressGestureRecognizer()
@@ -61,6 +68,8 @@ class TravelLocationsMapViewController: UIViewController, MKMapViewDelegate {
                         pin.longitude = myCoordinate.longitude
                         pin.title = "Open Photo Album"
                         pin.photoCount = photosParser.photos.total
+                        pin.pageNumber = Int32(photosParser.photos.page)
+                        pin.totalPages = Int32(photosParser.photos.pages)
                         self.mapView.addAnnotation(pin)
                         
                         // create Photo Object and add to Pin
@@ -70,7 +79,7 @@ class TravelLocationsMapViewController: UIViewController, MKMapViewDelegate {
                             if let flickrImageURL = flickrPhoto.mediumUrl {
                                 
                                 let imageURL = URL(string: flickrImageURL)
-                                
+                                photo.url = flickrImageURL
                                 self.downloadImage(from: imageURL!) { imageData  in
                                     guard let imageData = imageData else { return }
                                     photo.image = imageData
@@ -110,7 +119,7 @@ class TravelLocationsMapViewController: UIViewController, MKMapViewDelegate {
             print("Download Finished")
             
             completion(data)
-          
+            
         }
     }
     
