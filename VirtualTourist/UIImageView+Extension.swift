@@ -16,15 +16,13 @@ extension UIImageView {
         
         let url = URL(string: urlString)
         
-        
-        image = nil
+        image = UIImage(named: "imagePlaceholder")
         
         URLSession.shared.dataTask(with: url!) { (data, response, error) in
             if error != nil {
-                print(error)
+                print(error?.localizedDescription as Any)
                 return
             }
-            
             DispatchQueue.main.async {
                 self.image = UIImage(data: data!)
             }

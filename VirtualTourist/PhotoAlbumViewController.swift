@@ -13,36 +13,72 @@ import CoreData
 class PhotoAlbumViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     
     
+    enum Mode {
+        case view
+        case edit
+    }
+    
     @IBOutlet weak var mapView: MKMapView!
     @IBOutlet weak var collectionView: UICollectionView!
     var pin: Pin!
     var dataController: DataController!
-    
-    @IBOutlet weak var editButton: UIBarButtonItem!
-    @IBOutlet weak var deleteButton: UIBarButtonItem!
+    var mode: Mode = .view {
+        didSet {
+            switch mode {
+            case .view:
+                
+                for (key,value) in dictionarySelectedIndexPath {
+                    if value {
+                        collectionView.deselectItem(at: key, animated: true)
+                    }
+                }
+                dictionarySelectedIndexPath.removeAll()
+                navigationItem.hidesBackButton = false
+                navigationItem.leftBarButtonItem = nil
+                navigationItem.rightBarButtonItems = [editButton,loadNewCollectionButton]
+                editButton.title = "Edit"
+                collectionView.allowsMultipleSelection = false
+            case .edit:
+                navigationItem.hidesBackButton = true
+                navigationItem.leftBarButtonItem = deleteButton
+                navigationItem.rightBarButtonItems = [editButton]
+                editButton.title = "Done"
+                collectionView.allowsMultipleSelection = true
+                
+            }
+        }
+    }
+    var dictionarySelectedIndexPath: [IndexPath: Bool] = [:]
+    @IBOutlet  var editButton: UIBarButtonItem!
+    @IBOutlet  var deleteButton: UIBarButtonItem!
+    @IBOutlet  var loadNewCollectionButton: UIBarButtonItem!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         //TODO: Save All models with coredata
         //TODO: delete images and save persist the changes
-        //TODO: Make new collection button that randomizes the page from request call ( probably a refresh icon)
-        //TODO: Add placeholder image to the photos if they arent downloaded yet ( this might only show up when you refresh the collection) 
+        setupUI()
+    }
+    
+    
+    func setupUI() {
+        navigationItem.leftBarButtonItem = nil
+        
     }
     
     @IBAction func loadNewCollection(_ sender: Any) {
         
-       //Get random page number from the total amount of pages
+        //Get random page number from the total amount of pages
         let randomPage = Int.random(in: 1...Int(pin.totalPages))
-
         
-//        FlickrClient.getPhotos(lat: pin.latitude, long: pin.longitude, page: randomPage) { (photoParser, error) in
-//            pin.photos = photoParser?.photos.photo
-//        }
+        
+        //        FlickrClient.getPhotos(lat: pin.latitude, long: pin.longitude, page: randomPage) { (photoParser, error) in
+        //            pin.photos = photoParser?.photos.photo
+        //        }
         
         FlickrClient.getPhotos(lat: pin.latitude, long: pin.longitude, page: randomPage) { (photosParser, error) in
             
             if let photosParser = photosParser {
-                
                 self.pin.removeFromPhotos(self.pin.photos!)
                 
                 // create Photo Object and add to Pin
@@ -50,38 +86,44 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDelegate, UICo
                     let photo = Photo(context: self.dataController.viewContext)
                     
                     if let flickrImageURL = flickrPhoto.mediumUrl {
-                        
-                        let imageURL = URL(string: flickrImageURL)
-                        
                         photo.url = flickrImageURL
-                        
-//                        self.downloadImage(from: imageURL!) { imageData  in
-//                            guard let imageData = imageData else { return }
-//                            photo.image = imageData
-//                        }
-                        
                         DispatchQueue.main.async {
-                           self.pin.addToPhotos(photo)
+                            self.pin.addToPhotos(photo)
                         }
-                        
-                       
                     }
-                    
                 }
                 DispatchQueue.main.async {
                     self.collectionView.reloadData()
                 }
-                 
+                
             }
         }
         
-        
-        
     }
-
+    
     @IBAction func editTapped(_ sender: Any) {
+        
+        mode = mode == .view ? .edit : .view
     }
     @IBAction func deletePhotos(_ sender: Any) {
+        
+        var deleteNeededIndexPaths: [IndexPath] = []
+        
+        for(key,value) in dictionarySelectedIndexPath {
+            if value {
+                deleteNeededIndexPaths.append(key)
+            }
+        }
+        
+        for i in deleteNeededIndexPaths.sorted(by: {$0.item > $1.item}) {
+            //            photosArray.remove(at: i.item) Need to figure how to delete from coredata
+            
+            let photosArray = (pin.photos?.allObjects as? [Photo])!
+            pin.removeFromPhotos(photosArray[i.item])
+        }
+        
+        collectionView.deleteItems(at: deleteNeededIndexPaths)
+        dictionarySelectedIndexPath.removeAll()
     }
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         
@@ -102,9 +144,26 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDelegate, UICo
         return cell
     }
     
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        switch mode {
+        case .view:
+            collectionView.deselectItem(at: indexPath, animated: true)
+        case .edit:
+            dictionarySelectedIndexPath[indexPath] = true
+        }
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didDeselectItemAt indexPath: IndexPath) {
+        
+        if mode == .edit {
+            dictionarySelectedIndexPath[indexPath] = false
+        }
+    }
+    
     func collectionView(_ collectionView: UICollectionView,
                         layout collectionViewLayout: UICollectionViewLayout,
                         sizeForItemAt indexPath: IndexPath) -> CGSize {
+        collectionView.reloadData()
         return CGSize(width: 130, height: 130)
     }
 }

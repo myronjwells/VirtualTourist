@@ -25,8 +25,8 @@ class TravelLocationsMapViewController: UIViewController, MKMapViewDelegate {
         //TODO: figure out a way to delete pins
         //TODO: Extra- consider making a tutorial view for the different viewcontrollers?
         //TODO: Consider moving the photoCount, page, and pages out of Pin model into its own data model.
-              
-
+        
+        
         
         // Generate long-press UIGestureRecognizer.
         let myLongPress: UILongPressGestureRecognizer = UILongPressGestureRecognizer()
@@ -78,10 +78,10 @@ class TravelLocationsMapViewController: UIViewController, MKMapViewDelegate {
                             
                             if let flickrImageURL = flickrPhoto.mediumUrl {
                                 
-                                let imageURL = URL(string: flickrImageURL)
-                                photo.url = flickrImageURL
-                                self.downloadImage(from: imageURL!) { imageData  in
+                                self.downloadImage(from: flickrImageURL) { imageData  in
                                     guard let imageData = imageData else { return }
+                                    
+                                    photo.url = flickrImageURL
                                     photo.image = imageData
                                 }
                                 
@@ -108,14 +108,18 @@ class TravelLocationsMapViewController: UIViewController, MKMapViewDelegate {
         
     }
     
-    func downloadImage(from url: URL,completion: @escaping (Data?) -> Void) {
+    func downloadImage(from url: String,completion: @escaping (Data?) -> Void) {
+        guard let imageURL = URL(string: url) else {
+            debugPrint("Error in URL string to URL conversion")
+            return
+        }
         print("Download Started")
-        FlickrClient.getData(from: url) { data, response, error in
+        FlickrClient.getData(from: imageURL) { data, response, error in
             guard let data = data, error == nil
                 else {
                     completion(nil)
                     return }
-            print(response?.suggestedFilename ?? url.lastPathComponent)
+            print(response?.suggestedFilename ?? imageURL.lastPathComponent)
             print("Download Finished")
             
             completion(data)
