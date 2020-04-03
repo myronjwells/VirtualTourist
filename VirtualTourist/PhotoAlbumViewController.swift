@@ -57,13 +57,22 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDelegate, UICo
         super.viewDidLoad()
         //TODO: Save All models with coredata
         //TODO: delete images and save persist the changes
-        setupUI()
+        
+        navigationItem.leftBarButtonItem = nil
+        setupMap()
+
     }
     
     
-    func setupUI() {
-        navigationItem.leftBarButtonItem = nil
+    func setupMap() {
+        let previewPin = MKPointAnnotation()
+        previewPin.coordinate = pin.coordinate
+        self.mapView.addAnnotation(previewPin)
         
+        //Zooming in on annotation
+        let span = MKCoordinateSpan(latitudeDelta: 0.5, longitudeDelta: 0.5)
+        let region = MKCoordinateRegion(center: previewPin.coordinate, span: span)
+        self.mapView.setRegion(region, animated: true)
     }
     
     @IBAction func loadNewCollection(_ sender: Any) {

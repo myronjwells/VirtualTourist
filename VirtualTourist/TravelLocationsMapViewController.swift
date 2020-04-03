@@ -23,8 +23,8 @@ class TravelLocationsMapViewController: UIViewController, MKMapViewDelegate {
         //TODO: persist the spot user zoomed to with NSUserdefaults
         //TODO: See if there is any multi threading backend stuff needed for downloading pictures/making network calls in the longpress function
         //TODO: figure out a way to delete pins
-        //TODO: Extra- consider making a tutorial view for the different viewcontrollers?
         //TODO: Consider moving the photoCount, page, and pages out of Pin model into its own data model.
+         //TODO: Will need to add an activity spinner for when doing the network calls and waiting for the loading.
         
         
         
@@ -70,6 +70,7 @@ class TravelLocationsMapViewController: UIViewController, MKMapViewDelegate {
                         pin.photoCount = photosParser.photos.total
                         pin.pageNumber = Int32(photosParser.photos.page)
                         pin.totalPages = Int32(photosParser.photos.pages)
+            
                         self.mapView.addAnnotation(pin)
                         
                         // create Photo Object and add to Pin
@@ -139,6 +140,7 @@ class TravelLocationsMapViewController: UIViewController, MKMapViewDelegate {
             pinView?.animatesDrop = true
             pinView!.pinTintColor = .red
             pinView!.rightCalloutAccessoryView = UIButton(type: .detailDisclosure)
+            
             
             let photoCountbutton = UIButton(type: .roundedRect)
             photoCountbutton.frame = CGRect(x: 0, y: 0, width: 50, height: 50)
